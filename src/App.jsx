@@ -187,12 +187,28 @@ function Account() {
 
 // ✅ Send Transaction
 function SendTransaction() {
-  const { data: hash, sendTransaction } = useSendTransaction()
+  const { data: hash, sendTransaction } = useSendTransaction({
+    mutation: {
+      onError: (error) => {
+        alert("Transaction error: " + error.message)
+      },
+    },
+  })
 
   const sendTx = () => {
-    const to = document.getElementById('to').value
-    const value = document.getElementById('value').value
-    sendTransaction({ to, value: parseEther(value) })
+    const to = document.getElementById('to').value.trim()
+    const value = document.getElementById('value').value.trim()
+
+    if (!to || !value) {
+      alert("Please fill in both address and value.")
+      return
+    }
+
+    try {
+      sendTransaction({ to, value: parseEther(value) })
+    } catch (error) {
+      console.error("Transaction error:", error)
+    }
   }
 
   return (
@@ -211,6 +227,7 @@ function SendTransaction() {
     </div>
   )
 }
+
 
 export default App
 
